@@ -1,0 +1,14 @@
+{
+  "name": "Yeelight",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "find-free-port": "^2.0.0",
+    "ip": "^1.1.5",
+    "node-yeelight-wifi": "^0.1.4",
+    "source-map-support": "^0.5.12"
+  },
+  "scripts": {
+    "dev": "node src/main.js"
+  }
+}
