@@ -1,31 +1,11 @@
-const Lookup = require("node-yeelight-wifi").Lookup;
+const Server = require("./server.js");
 
-var lights = [];
+var server = new Server();
 
-let look = new Lookup();
-look.on("detected", light => {
-    console.log("new light");
+server.init();
 
-    lights.push(light)
+server.launch();
 
-    //socket connect and disconnect events
-    light.on("connected",() =>{ console.log("connected"); });
-    light.on("disconnected",() => { console.log("disconnected"); });
+//setTimeout(() => { server.lights.forEach(light => { light.setPower(true)}) }, 2000)
+setInterval(() => { server.lights.forEach(light => { console.log("test"); light.send("{\"id\":1,\"method\":\"get_prop\",\"params\":[\"\"]}")})}, 1000)
 
-    //if the color or power state has changed
-    light.on("stateUpdate",(light) => { console.log(light.rgb); });
-
-    //if something went wrong
-    light.on("failed",(error) => { console.log(error); });
-});
-
-setInterval(() => {
-    for (var light of lights) {
-	light.setRGB([rand(), rand(), rand()]).then(() => { console.log("ok") }).catch((error => { console.log("failed", error)}));
-    }
-}, 100);
-
-
-function rand() {
-    return Math.ceil(Math.random() * 255)
-}
