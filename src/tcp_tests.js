@@ -35,7 +35,7 @@ var startYeelight = function() {
 		//	    clearInterval(interval);
 	    }
 	}
-    }, 10);
+    }, 1000);
     
     let tcpServerStarted = false;
     
@@ -128,4 +128,13 @@ startYeelight();
 
 function rand() {
     return Math.ceil(Math.random() * 255)
+}
+
+
+
+
+class Light {
+
+    function connect() {
+    }
 }
