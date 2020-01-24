@@ -2,8 +2,9 @@ class Light {
 	constructor() {
 	}
 
-	init(socket, data) {
+	init(server, socket, data) {
 		this.socket = socket;
+		this.server = server;
 		this.data = data;
 		this.current_command = null;
 		this.intervals = [];
@@ -109,24 +110,33 @@ class Light {
 	}
 
 	onInterval(name, fn, timeout, limit = -1) {
-		this.intervals[name] = {
-			interval: setInterval(function() {
-				fn.bind(this)(this.intervals[name].count);
-				if (this.intervals[name].limit == this.intervals[name].count) {
-					this.clearInterval(name);
-				}
+		let test = null
+		let promise = new Promise(function(resolve, reject) { test = resolve; }.bind(this));
+		let interval = setInterval(function() {
+			fn.bind(this)(this.intervals[name].count);
+			if (this.intervals[name].limit == this.intervals[name].count) {
+				this.clearInterval(name);
+			} else {
 				this.intervals[name].count++;
-			}.bind(this), timeout),
+			}
+		}.bind(this), timeout);
+
+		this.intervals[name] = {
+			interval: interval,
+			test: test,
+			promise: promise,
 			count: 1,
 			limit: limit
 		};
 		console.log("Created interval <" + name + "> for light <" + this.name + ">");
-		return this;
+		return promise;
 	}
 
 	clearInterval(name) {
 		if (this.intervals[name]) {
 			clearInterval(this.intervals[name].interval);
+			this.intervals[name].test('ok');
+			this.intervals.splice(this.intervals.indexOf(name), 1);
 			console.log("Cleared interval <" + name + ">");
 		} else {
 			console.error("Unknown interval <" + name + ">");

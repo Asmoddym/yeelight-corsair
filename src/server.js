@@ -13,19 +13,22 @@ class Server {
 
 	launch() {
 		this.discovery_interval = setInterval(function() { console.log(".") }, 200);
-		console.log("Beginning discovery period (" + constants.discover_delay + " ms)...");
 		this.tcp_server_started = false;
 		this.sockets = [];
 		this.afterDiscover = null;
 		this.lights_ids = [];
 		this.lights = [];
-		this.server = this.initServer();
-		this.yeelight_lookup = this.initLookup();
-		this.processAfterDiscover();
+		return new Promise(function(resolve, reject) {
+			console.log("Beginning discovery period (" + constants.discover_delay + " ms)...");
+			this.server = this.initServer();
+			this.yeelight_lookup = this.initLookup();
+			this.processAfterDiscover(resolve);
+		}.bind(this))
 	}
 
-	processAfterDiscover() {
+	processAfterDiscover(resolve) {
 		setTimeout(function() {
+			resolve()
 			clearInterval(this.discovery_interval);
 			console.log("\nDiscovery ended!\n");
 			console.log("Lights found: ");
@@ -68,7 +71,7 @@ class Server {
 			if (light_data.length == 0) {
 				console.error("Unknown light data for IP " + addr);
 			} else {
-				light.init(socket, light_data[0]);
+				light.init(_this, socket, light_data[0]);
 				_this.lights.push(light)
 			}
 		});
@@ -126,7 +129,7 @@ class Server {
 		return host;
 	}
 
-	forAllLights(fn) {
+	all(fn) {
 		this.lights.forEach(fn);
 	}
 
