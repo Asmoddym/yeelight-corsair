@@ -1,11 +1,20 @@
 const Server = require("./server.js");
-
+const constants = require("./constants");
 var server = new Server();
 
 server.init();
 
 server.launch();
 
-//setTimeout(() => { server.lights.forEach(light => { light.setPower(true)}) }, 2000)
-setInterval(() => { server.lights.forEach(light => { console.log("test"); light.send("{\"id\":1,\"method\":\"get_prop\",\"params\":[\"\"]}")})}, 1000)
-
+server.afterDiscover = function() {
+	this.forAllLights(light => {
+		light.setBrightness(100).onInterval("test_" + light.name, function() { this.setRGB(constants.colors.random())}, 1000, 5)
+	})
+/*	this.get("batterie").setBrightness(100).onInterval("test", function(count) {
+		if (count == 5) {
+			this.clearInterval("test")
+			this.setPower(false)
+		}
+		this.setRGB(constants.colors.random(), 100)
+	}, 1000)
+*/}

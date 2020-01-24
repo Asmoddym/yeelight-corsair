@@ -4,26 +4,47 @@ const Lookup = require("node-yeelight-wifi").Lookup;
 const net = require("net");
 const ip = require('ip');
 
+const constants = require("./constants");
+
 class Server {
 	init() {
 		console.log("Initializing server...");
 	}
 
 	launch() {
-		console.log("Launching server...");
-
+		this.discovery_interval = setInterval(function() { console.log(".") }, 200);
+		console.log("Beginning discovery period (" + constants.discover_delay + " ms)...");
 		this.tcp_server_started = false;
+		this.sockets = [];
+		this.afterDiscover = null;
+		this.lights_ids = [];
 		this.lights = [];
 		this.server = this.initServer();
 		this.yeelight_lookup = this.initLookup();
-		this.sockets = [];
-		this.lights_ids = [];
+		this.processAfterDiscover();
+	}
+
+	processAfterDiscover() {
+		setTimeout(function() {
+			clearInterval(this.discovery_interval);
+			console.log("\nDiscovery ended!\n");
+			console.log("Lights found: ");
+			this.lights.forEach(light => {
+				console.log(`  - <${light.data.name}> (IP: ${light.data.addr})`)
+			})
+			console.log("\n");
+			if (this.afterDiscover) {
+				this.afterDiscover();
+			}
+		}.bind(this), constants.discover_delay)
 	}
 
 	initLookup() {
     let look = new Lookup();
     look.on("detected", light => {
-			console.log("New yeelight detected (id: " + light.id + ", name: <" + light.name + ">)");
+    	let addr = this.getRemoteAddressFromSocket(light.socket);0
+			console.log("  - New Yeelight detected on IP " + addr + " (id: " + light.id + ", name: <" + light.name + ">)");
+			this.lights_ids.push({id: light.id, name: light.name, addr: addr});
 			if (!light.power) {
 		    light.setPower(true);
 			}
@@ -36,23 +57,28 @@ class Server {
 		let _this = this;
 		var server = net.createServer(function(socket) {
 			socket.setEncoding("utf8");
-			let remote_address = _this.getRemoteAddressFromSocket(socket);
-			console.log("Found new socket, remote address: " + remote_address);
+			let addr = _this.getRemoteAddressFromSocket(socket);
+			console.log("  - Found new socket, remote address: " + addr);
 
 	    socket.on('close', () => {
 	    	console.log("REMOVE LIGHT !!!")
 	    });
-	    socket.on('data', (data) => { console.log(">>> ", data) })
 			let light = new Light();
-			light.init(socket, remote_address)
-			_this.lights.push(light)
+			let light_data = _this.lights_ids.filter(item => { return item.addr == addr });
+			if (light_data.length == 0) {
+				console.error("Unknown light data for IP " + addr);
+			} else {
+				light.init(socket, light_data[0]);
+				_this.lights.push(light)
+			}
 		});
 
 		server.on('error', (e) => {
 	    console.error(e.code);
 		});
 
-		server.listen(54321, () => {
+
+		server.listen(constants.port, () => {
 			console.log("Server bound")
 		});
 		return server;
@@ -64,8 +90,8 @@ class Server {
 	}
 
 	connectLight(yeelight) {
-		yeelight.sendCommand("set_music", [1, this.findIpInNetwork(yeelight.host), 54321]).then(() => {
-			console.log("Light connected to server");
+		yeelight.socket.setEncoding("utf8");
+		yeelight.sendCommand("set_music", [1, this.findIpInNetwork(yeelight.host), constants.port]).then(() => {
 		}).catch(e => {
 			console.log(e);
 		});
@@ -80,7 +106,9 @@ class Server {
 
 		Object.keys(ifaces).forEach(function (ifname) {
 			ifaces[ifname].forEach(function (iface) {
-				if ('IPv4' !== iface.family || iface.internal !== false) return;
+				if ('IPv4' !== iface.family || iface.internal !== false) {
+					return;
+				}
 				cidrs.push(iface.cidr);
 			});
 		});
@@ -91,17 +119,19 @@ class Server {
 			}
 		});
 
-		if (!host) throw "Can't find shared network";
+		if (!host) {
+			throw "Can't find shared network";
+		}
 
 		return host;
 	}
 
 	forAllLights(fn) {
-		this.lights.forEach(fn)
+		this.lights.forEach(fn);
 	}
 
-	forLight(name, fn) {
-		this.lights.filter
+	get(name) {
+		return this.lights.filter(item => { return item.data.name == name })[0];
 	}
 }
 
