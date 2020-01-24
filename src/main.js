@@ -12,17 +12,3 @@ server.launch().then(function() {
 		server.get("salon").setRGB(constants.colors.green)
 	})
 }.bind(server));
-
-/*server.afterDiscover = function() {
-	this.forAllLights(light => {
-		light.setBrightness(100).onInterval("test_" + light.name, function() { this.setRGB(constants.colors.random())}, 1000, 5)
-	})
-	this.get("batterie").setBrightness(100).onInterval("test", function(count) {
-		if (count == 5) {
-			this.clearInterval("test")
-			this.setPower(false)
-		}
-		this.setRGB(constants.colors.random(), 100)
-	}, 1000)
-}
-*/
