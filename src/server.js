@@ -80,7 +80,6 @@ class Server {
 	    console.error(e.code);
 		});
 
-
 		server.listen(constants.port, () => {
 			console.log("Server bound")
 		});
@@ -129,12 +128,16 @@ class Server {
 		return host;
 	}
 
-	all(fn) {
+	all(fn = null) {
 		this.lights.forEach(fn);
 	}
 
 	get(name) {
-		return this.lights.filter(item => { return item.data.name == name })[0];
+		let light = this.lights.filter(item => { return item.data.name == name })[0];
+		if (typeof light == 'undefined') {
+			throw "Unable to get light " + name;
+		}
+		return light;
 	}
 }
 
