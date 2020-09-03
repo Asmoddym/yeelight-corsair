@@ -1,14 +1,23 @@
+//
+// CUESDK.hpp for custom_interface
+// File path: G:\projects\NodeJS\yeelight-corsair\custom_interface\utils\cue_sdk\include\CUESDK.hpp
+//
+// Author              : Asmoddym
+// Created at          : 03 Sep 2020, 22:47:03
+// Last modification at: 03 Sep 2020, 22:47:03
+//
+
 #pragma once
 
-#include "CUESDKGlobal.h"
+#include "CUESDKGlobal.hpp"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include "CorsairLedIdEnum.h"
-#include "CorsairKeyIdEnum.h"
+#include "CorsairLedIdEnum.hpp"
+#include "CorsairKeyIdEnum.hpp"
 
 #if defined(__GNUC__) || defined(__clang__)
 #	define CORSAIR_LIGHTING_SDK_DEPRECATED(message) __attribute__((deprecated(message)))

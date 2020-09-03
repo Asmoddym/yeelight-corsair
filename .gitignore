@@ -111,3 +111,6 @@ Debug/
 *.ilk
 *.pdb
 .vs/
+
+bin/
+.build/
