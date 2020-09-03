@@ -4,12 +4,15 @@
 //
 // Author              : Asmoddym
 // Created at          : 03 Sep 2020, 23:13:17
-// Last modification at: 03 Sep 2020, 23:32:35
+// Last modification at: 03 Sep 2020, 23:50:17
 //
 
 #include "ServerInterface.hpp"
+#include "utils\cpp_utils\include\log.hpp"
+#include <sstream>
 
-yeelight_corsair::ServerInterface::ServerInterface() {
+yeelight_corsair::ServerInterface::ServerInterface() :
+	_request("http://192.168.1.22/yeelight-corsair/api/") {
 }
 
 yeelight_corsair::ServerInterface::~ServerInterface() {
@@ -23,13 +26,22 @@ yeelight_corsair::ServerInterface::~ServerInterface() {
 
 int yeelight_corsair::ServerInterface::init() {
 	LOG_D("Initializing ServerInterface...");
-	_request = http::Request("192.168.1.22/yeelight_corsair/api");
 	LOG_D("OK");
 	return 0;
 }
 
 int yeelight_corsair::ServerInterface::setNewColor(CorsairLedColor &color) {
-	const http::Response = request.send("GET", "a=1&b=2");
+	std::stringstream ss;
+	std::string response;
+
+	ss << color.r << "," << color.g << "," << color.b;
+	const http::Response response = _request.send("POST", {{"action", "set_new_color"}, {"color", ss.str()}}, {"Content-Type: application/x-www-form-urlencoded"});
+	response = std::string(response.body.begin(), response.body.end());
+
+	if (response != "ok") {
+		LOG_E("Error with the API: ", response);
+		return 1;
+	}
 
 	return 0;
 }

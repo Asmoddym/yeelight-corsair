@@ -4,7 +4,7 @@
 //
 // Author              : Asmoddym
 // Created at          : 03 Sep 2020, 22:24:07
-// Last modification at: 03 Sep 2020, 23:30:50
+// Last modification at: 03 Sep 2020, 23:38:53
 //
 
 #include "Core.hpp"
@@ -69,7 +69,7 @@ void yeelight_corsair::Core::loop() {
 			return ;
 		}
 
-		Sleep(100);
+		Sleep(1000);
 	}
 }
 
