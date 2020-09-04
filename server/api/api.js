@@ -1,3 +1,5 @@
+const api_calls = require('./calls');
+
 class API {
 	init(yeelight_server) {
 		console.log("Initializing API...")
@@ -5,8 +7,15 @@ class API {
 	}
 
 	processRequest(body) {
-		console.log("Processing request: ", body)
-		this.yeelight_server.addEvent(function(server) { console.log("ok") })
+		switch (body.action) {
+			case "set_new_color":
+				this.yeelight_server.addEvent(api_calls.set_new_color, {color: body.color});
+				break;
+			default:
+				console.error("Unknown action ", body.action)
+				return 1;
+		}
+		return 0;
 	}
 };
 

@@ -4,7 +4,7 @@
 //
 // Author              : Asmoddym
 // Created at          : 03 Sep 2020, 22:24:07
-// Last modification at: 03 Sep 2020, 23:38:53
+// Last modification at: 04 Sep 2020, 19:30:58
 //
 
 #include "Core.hpp"
@@ -69,8 +69,9 @@ void yeelight_corsair::Core::loop() {
 			return ;
 		}
 
-		Sleep(1000);
+		Sleep(200);
 	}
+	LOG_L("Quitting loop");
 }
 
 int yeelight_corsair::Core::retrieveCurrentColor(CorsairLedColor &color) {

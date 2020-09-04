@@ -4,7 +4,7 @@
 //
 // Author              : Asmoddym
 // Created at          : 03 Sep 2020, 23:13:17
-// Last modification at: 03 Sep 2020, 23:50:17
+// Last modification at: 04 Sep 2020, 19:22:57
 //
 
 #include "ServerInterface.hpp"
@@ -12,7 +12,7 @@
 #include <sstream>
 
 yeelight_corsair::ServerInterface::ServerInterface() :
-	_request("http://192.168.1.22/yeelight-corsair/api/") {
+	_request("http://192.168.1.12:8080/api") {
 }
 
 yeelight_corsair::ServerInterface::~ServerInterface() {
@@ -35,8 +35,8 @@ int yeelight_corsair::ServerInterface::setNewColor(CorsairLedColor &color) {
 	std::string response;
 
 	ss << color.r << "," << color.g << "," << color.b;
-	const http::Response response = _request.send("POST", {{"action", "set_new_color"}, {"color", ss.str()}}, {"Content-Type: application/x-www-form-urlencoded"});
-	response = std::string(response.body.begin(), response.body.end());
+	const http::Response call_response = _request.send("POST", {{"action", "set_new_color"}, {"color", ss.str()}}, {"Content-Type: application/x-www-form-urlencoded"});
+	response = std::string(call_response.body.begin(), call_response.body.end());
 
 	if (response != "ok") {
 		LOG_E("Error with the API: ", response);

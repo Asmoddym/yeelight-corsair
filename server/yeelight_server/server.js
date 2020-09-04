@@ -142,16 +142,20 @@ class Server {
 		return light;
 	}
 
-	addEvent(event) {
-		this.events.push(event)
+	addEvent(event, params) {
+		console.log("Adding ", event.name, " event with params ", params);
+		this.events.push({event: event, params: params});
 	}
 
 	pollEvent() {
-		return this.events.length < 0 ? this.events.shift() : null;
+		console.log("Polling: ", this.events.length, " events");
+		let event = this.events.shift()
+		return typeof event != 'undefined' ? event : null;
 	}
 
 	processEvent(event) {
-		event(this)
+		console.log("Processing event ", event.event.name, " with params ", event.params);
+		return event.event(this, event.params);
 	}
 }
 
