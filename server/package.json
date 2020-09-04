@@ -9,6 +9,6 @@
     "source-map-support": "^0.5.12"
   },
   "scripts": {
-    "dev": "node src/main.js"
+    "dev": "node main.js"
   }
 }

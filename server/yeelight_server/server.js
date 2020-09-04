@@ -9,6 +9,8 @@ const constants = require("./constants");
 class Server {
 	init() {
 		console.log("Initializing server...");
+		this.initialized = true;
+		this.events = [];
 	}
 
 	launch() {
@@ -138,6 +140,18 @@ class Server {
 			throw "Unable to get light " + name;
 		}
 		return light;
+	}
+
+	addEvent(event) {
+		this.events.push(event)
+	}
+
+	pollEvent() {
+		return this.events.length < 0 ? this.events.shift() : null;
+	}
+
+	processEvent(event) {
+		event(this)
 	}
 }
 

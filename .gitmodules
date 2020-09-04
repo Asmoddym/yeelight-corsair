@@ -1,3 +1,3 @@
-[submodule ".\\custom_interface\\utils\\cpp_utils"]
-	path = .\\custom_interface\\utils\\cpp_utils
+[submodule "custom_interface/utils/cpp_utils"]
+	path = custom_interface/utils/cpp_utils
 	url = https://www.github.com/Asmoddym/cpp_utils
